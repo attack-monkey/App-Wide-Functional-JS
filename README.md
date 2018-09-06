@@ -1,6 +1,15 @@
 # pragmatic-functional
 A pragmatic approach to functional javascript in an es6 / node landscape
 
+Pragmatic-functional adapts functional (and reactive) programming principles to a whole of applocation approach. It is a set of principles that meets functional programming at the edge - to provide a way to build applications.
+
+Principles
+----------
+
+1 An application should have application stored in one place.
+2 An application should at any time be able to log the current state as well as x previous states for holistic comparision of state changes.
+3
+
 Functional vs Object Oriented
 -----------------------------
 
@@ -38,11 +47,7 @@ stateAndFunction = class {
 In the above, the class is **stateful**. It stores state.
 
 In functional programming the function should not alter state, but rather return a new value - **state 2.0**. 
-This keeps things clean as programs become more complex, since state doesn't get changed by some rogue state-altering-function.
-
-OO programming keeps things clean by adding strictness about what can change an object's property and how.
-
-In functional programming however, immutability is prized to preserve the ** don't alter state** principle.
+This keeps things clean as programs become more complex.
 
 *E.g. Using the functional and OO examples from above...*
 
@@ -54,6 +59,14 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 ```
 
+In a pragmatic-whole application approach, a program cannot be a stateless function. As soon as a program has multiple event listeners, an application-wide-stateless program fails due to the way that closures *capture* state at the time that the closure is activated. A closure will capture the state and wait until an event causes the listener to fire. When the listener fires though it only has the state that it knows about. The state may have evolved since that point.
+
+At a minimum, a whole application approach must have at least one implementation of state. 
+
+
+
+
+
 However, in OO - things are mutable ...
 
 ```javascript
@@ -64,7 +77,7 @@ myNumber.increment(); // myNumber.state === 2
 
 ```
 
-OO has controls on what can be mutated and what can't, where as immutability is a core tenant of what functional programming is.
+OO has controls on what can be mutated and what can't, where as **immutability** is a core tenant of what functional programming is.
 
 Pure functions
 --------------
@@ -113,9 +126,9 @@ function program(state) {
 
 ```
 
-However, if we were to set this to a really high number - we'd blow the memory stack. For every unreturned function call, that function remains in memory.
+However, if we were to set this to a really high number - we'd blow the memory stack. For every unreturned function call, that function remains in memory and eventually the system will run out.
 
-To prevent this - make sure that your program is in strict mode and you use return...
+To prevent this - make sure that your program is in strict mode and you return a result. This tells garbage collection that the function is no longer required in memory.
 
 ```javascript
 
