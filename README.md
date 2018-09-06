@@ -7,14 +7,14 @@ Principles
 ----------
 
 1. State should be stored in one place (*Subject to caveats*).
-2. All state changes should be immutable
-2. Since state instances are minimal, classes should also be used minimally.
-3. Use reusable functions over classes.
-4. An application should in one console.log be able to log the current state as well as x previous states for holistic comparision of state changes.
-5. Functions **where possible should be pure**
-6. Where functions cannot be pure, they should be written with the injector or DI pattern, so they are predictable, testable, and asolated.
-7. Use recursion over looping, and ensure that memory leaks are minimised.
-8. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
+1. All state changes should be **immutable**
+1. Since state instances are minimal, classes should also be used minimally.
+1. Use reusable functions over classes.
+1. An application should in one console.log be able to log the current state as well as x previous states for holistic comparision of state changes.
+1. Functions **where possible should be pure**
+1. Where functions cannot be pure, they should be written with the injector or DI pattern, so they are predictable, testable, and asolated.
+1. Use recursion over looping, and ensure that memory leaks are minimised.
+1. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
 
 
 ## State should be stored in one place
@@ -79,20 +79,57 @@ In order to log current state and previous states in one `console.log` it makes 
 
 To store current state and previous states in one variable, an Immutable State Store should be used. It's a fancy way of saying *An array of states* where `stateStore[0]` is current state, `stateStore[1]` is previous state and so on.
 
+When changing states it may be beneficial to perform several operations on the current state, before actually saving it as the new current state. This is known as *working state*.
 
-
-
-However, in OO - things are mutable ...
+Eg.
 
 ```javascript
 
-let myNumber = new stateAndFunction();
-myNumber.increment(); // myNumber.state === 1
-myNumber.increment(); // myNumber.state === 2
+const workingState1 = getCurrentState();
+const workingState2 = addNewThingToState(workingState1);
+saveNewCurrentState(workingState2);
 
 ```
 
-OO has controls on what can be mutated and what can't, where as **immutability** is a core tenant of what functional programming is.
+This is totally acceptable :smile:
+
+It might also be beneficial to get part of the currentState, perform operations on that smaller **partial state** and then immutably merge it back into a new current state. Again totally acceptable :smile:
+
+- It's also fine to have static config files for an application.
+- It's also fine to dynamically build a static file at the start of application run time. So long as the application then treats the result as static.
+
+Finally, it's ok to have meta-state within a closure, or object. Meta state can for example be a map of callbacks, used in a subscription.
+
+```javascript
+
+/* 
+ * An event emitter module that can be subscribed to and unsubscribed from.
+ * Meta-state of functionMap and id are stored within the module.
+ * Nothing else in the application needs to know about the state of functionMap and id.
+ * For such a contained environment, id and functionMap are mutable.
+ */
+
+let functionMap = {};
+let id = 0;
+
+function eventEmitter() {
+  return {
+    subscribe: (func) => {
+      functionMap[counter] = func;
+      id = id + 1;
+      return id;
+    },
+    unsubscribe: (id) => {
+      delete functionMap(id);
+      return id;
+    },
+    emit: (value) => {
+    	Object.keys(functionMap).forEach(key => functionMap[key](value));
+    }
+  }
+}
+
+```
 
 Pure functions
 --------------
@@ -105,10 +142,9 @@ In a functional program, a pure function exhibit the following characteristics..
 - If the same arguments are passed in, the function will always return the same response
 - They don't produce any side-effects (eg. print, send an email, change a global variable, etc.)
 
-Functions **where possible should be pure** - however their are times when they simply can't be, 
-since the whole point of a program is to change state and produce side-effects - AND we'll get to that soon.
+Functions **where possible should be pure** - however their are times when they simply can't be.
 
-But first...
+
 
 Looping vs Recursion
 ----------------------------
@@ -160,26 +196,4 @@ function program(state) {
 }
 
 ```
-
-## Impure functions
-
-### Event driven javascript cannot be stateless
-
-ToDO
-
-###
-
-ToDO
-
-
-
-
-
-
-
-
-
-
-
-
 
