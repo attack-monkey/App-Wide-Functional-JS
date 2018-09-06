@@ -67,18 +67,19 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 ```
 
-### So why not stateless?
+### So why can't we build our whole application as stateless?
 
-In a pragmatic-whole application approach, a program cannot be a stateless function. As soon as a program has multiple event listeners, an application-wide-stateless program fails due to the way that closures *capture* state at the time that the closure is activated. A closure will capture the state and wait until an event causes the listener to fire. When the listener fires though it only has the state that it knows about. The state may have evolved since that point.
+In a pragmatic-whole application approach, an application cannot be a pure stateless function. As soon as a program has multiple event listeners, an application-wide-stateless program fails due to the way that closures *capture* state at the time that the closure is activated. A closure will capture the state and wait until an event causes the listener to fire. When the listener fires though it only has the state that it knows about. The state may have evolved since that point.
 
 At a minimum, a whole application approach must have at least one implementation of state.
 
 In order to log current state and previous states in one `console.log` it makes sense to keep state in one place. Why do we even need to access current and previous states? - Essentially provides the ability to see how state holistically changes from one iteration to the next. Not all previous states need to be kept, and in production you may only keep the current state in memory, but when in development, the developer should be able to change a setting to trace state changes over time.
 
-## Caveats
+### Immutable State Store
 
 To store current state and previous states in one variable, an Immutable State Store should be used. It's a fancy way of saying *An array of states* where `stateStore[0]` is current state, `stateStore[1]` is previous state and so on.
 
+### Working State
 When changing states it may be beneficial to perform several operations on the current state, before actually saving it as the new current state. This is known as *working state*.
 
 Eg.
@@ -93,11 +94,14 @@ saveNewCurrentState(workingState2);
 
 This is totally acceptable :smile:
 
+### Partial State
 It might also be beneficial to get part of the currentState, perform operations on that smaller **partial state** and then immutably merge it back into a new current state. Again totally acceptable :smile:
 
+### Static and Psuedo-static files
 - It's also fine to have static config files for an application.
 - It's also fine to dynamically build a static file at the start of application run time. So long as the application then treats the result as static.
 
+### Meta-state
 Finally, it's ok to have meta-state within a closure, or object. Meta state can for example be a map of callbacks, used in a subscription.
 
 ```javascript
