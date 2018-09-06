@@ -6,9 +6,9 @@ Pragmatic-functional adapts functional (and reactive) programming principles to 
 Principles
 ----------
 
-1 An application should have application stored in one place.
-2 An application should at any time be able to log the current state as well as x previous states for holistic comparision of state changes.
-3
+1. An application should have application stored in one place.
+2. An application should at any time be able to log the current state as well as x previous states for holistic comparision of state changes.
+3. sdf
 
 Functional vs Object Oriented
 -----------------------------
