@@ -6,12 +6,20 @@ Pragmatic-functional adapts functional (and reactive) programming principles to 
 Principles
 ----------
 
-1. An application should have application stored in one place.
-2. An application should at any time be able to log the current state as well as x previous states for holistic comparision of state changes.
-3. sdf
+1. State should be stored in one place (*Subject to caveats*).
+2. All state changes should be immutable
+2. Since state instances are minimal, classes should also be used minimally.
+3. Use reusable functions over classes.
+4. An application should in one console.log be able to log the current state as well as x previous states for holistic comparision of state changes.
+5. Functions **where possible should be pure**
+6. Where functions cannot be pure, they should be written with the injector or DI pattern, so they are predictable, testable, and asolated.
+7. Use recursion over looping, and ensure that memory leaks are minimised.
+8. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
 
-Functional vs Object Oriented
------------------------------
+
+## State should be stored in one place
+
+### Functional vs Object Oriented
 
 The big difference between a functional program and an Object Oriented one is the treatment of state and functions.
 
@@ -59,10 +67,17 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 ```
 
+### So why not stateless?
+
 In a pragmatic-whole application approach, a program cannot be a stateless function. As soon as a program has multiple event listeners, an application-wide-stateless program fails due to the way that closures *capture* state at the time that the closure is activated. A closure will capture the state and wait until an event causes the listener to fire. When the listener fires though it only has the state that it knows about. The state may have evolved since that point.
 
-At a minimum, a whole application approach must have at least one implementation of state. 
+At a minimum, a whole application approach must have at least one implementation of state.
 
+In order to log current state and previous states in one `console.log` it makes sense to keep state in one place. Why do we even need to access current and previous states? - Essentially provides the ability to see how state holistically changes from one iteration to the next. Not all previous states need to be kept, and in production you may only keep the current state in memory, but when in development, the developer should be able to change a setting to trace state changes over time.
+
+## Caveats
+
+To store current state and previous states in one variable, an Immutable State Store should be used. It's a fancy way of saying *An array of states* where `stateStore[0]` is current state, `stateStore[1]` is previous state and so on.
 
 
 
