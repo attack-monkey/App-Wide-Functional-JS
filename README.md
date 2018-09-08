@@ -13,6 +13,7 @@ Principles
 1. Where functions cannot be pure, they should be written with the injector or DI pattern, so they are predictable, testable, and isolated.
 1. Use recursion over looping, and ensure that memory leaks are minimised.
 1. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
+1. Use the file name to indicate the type of function / type that the module contains. eg. `home.function.ts`, `thing.factory.ts`.
 
 ## Functional vs Object Oriented
 
