@@ -153,6 +153,38 @@ So just to clear things up classes, constructor functions, and factories all pro
 
 Since state is separate to function, they're not going to get used all the time - however they are still important. For example, our event emitter above is a factory function. It produces event emitters. So as soon as some sort of state (even meta-state) is stored with function, then a class, constructor, factory should be used - so it can be reused to create instances of that thing.
 
+### Singletons
+
+Singletons are essentially a factory that only ever returns a single instance of an object. They're very important in an application because they can be referenced throughout an application - with the knowledge that what's being updated / retrieved is only within the scope of one object.
+
+```javascript
+
+function myFactory() {
+	return {thing: 'new object'};
+}
+
+const singletonObject = {
+  thing: 'cat'
+};
+
+function mySingleton() {
+  return singletonObject;
+}
+
+// Even though this factory produces objects that look identical, they are not the
+// same instance... and therefore not equal.
+const myInstance1 = myFactory();
+const myInstance2 = myFactory();
+console.log(myInstance1 === myInstance2); // false
+
+// A singleton produces the sameobject instance.
+const myInstance3 = mySingleton();
+const myInstance4 = mySingleton();
+
+console.log(myInstance3 === myInstance4); // true
+
+```
+
 Pure functions
 --------------
 
