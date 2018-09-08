@@ -144,7 +144,7 @@ Since functional programming keeps state and function separate, there are very f
 
 While classes may not be as highly prized, reusability still is. Functions are made reusable by being able to perform the same operation on an input, regardless of what the input is (providing that it is at least of compatible type).
 
-For example, our very first increment function doesn't care what number it gets, it simply returns a new number - 1 larger than the number passed in.
+For example, our very first increment function doesn't care what number it gets, it simply returns a new number 1 larger than the number passed in.
 
 ### When to use classes, constructor functions, and factories...
 
