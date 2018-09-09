@@ -167,7 +167,7 @@ They're very important as they let the same object be imported anywhere in the a
 ```javascript
 
 function myFactory() {
-	return {thing: 'new object'};
+  return {thing: 'new object'};
 }
 
 const singletonObject = {
@@ -195,7 +195,7 @@ console.log(myInstance3 === myInstance4); // true
 Pure functions
 --------------
 
-In a functional program, a pure function exhibit the following characteristics...
+In a functional program, a pure function exhibits the following characteristics...
 
 - They only refer to paramaters that were passed into the function - no outside variables
 - They don't alter any paramaters that is passed in
@@ -273,3 +273,15 @@ TODO: Write me
 
 Semantic file names
 -------------------
+
+To help developers know what type of file they are working on it is best to:
+a) limit the number of things that any one file exports to 1.
+and
+b) Semantically name the file based on what the export is
+
+If it's a singleton, end the file name in .singleton.js
+If it's a factory -> .factory.js
+If it's just a function -> .function.js
+
+If it's multiple of one thing -> .functions.js (Though usually we only want one file to one export)
+If it's multiple different things being exported -> module.js (Generally not good practice to have a mixed bag, but there may be reasons)
