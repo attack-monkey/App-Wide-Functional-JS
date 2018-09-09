@@ -1,19 +1,20 @@
-# pragmatic-functional
-A pragmatic approach to functional javascript in an es6 / node landscape
+# App-Wide-Functional-js
 
-Pragmatic-functional adapts functional and reactive programming into a whole of applocation approach. It is a set of principles that meets functional programming at the edge - to provide a way to build modern javascript applications.
+An application wide approach to functional / reactive programming in an es6+ / node landscape
+
+awf.js provides a set of principles, reasons, and patterns that meet functional programming at the edge - to provide a way to build modern javascript applications.
 
 Principles
 ----------
 
 1. State should be stored in one place.
-1. **immutable** over mutable
+1. **Immutable** over Mutable.
 1. Use reusable functions over classes.
 1. Functions **where possible should be pure**
 1. Where functions cannot be pure, they should be written with the injector or DI pattern, so they are predictable, testable, and isolated.
 1. Use recursion over looping, and ensure that memory leaks are minimised.
 1. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
-1. Use the file name to indicate the type of function / type that the module contains. eg. `home.function.ts`, `thing.factory.ts`.
+1. Use semantic file names to indicate the type of module eg. `home.function.ts`, `thing.factory.ts`.
 
 ## Functional vs Object Oriented
 
@@ -65,17 +66,21 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 ```
 
-In the above we can see how myNumberV<x> changes over time and if we wanted to, we could even print all of the iterations out in a console.log for comparison.
+> In the above we can see how myNumberV**x** changes over time and if we wanted to, we could print all of the iterations out in a console.log for comparison. This is the benefit of immutability.
+
+Writing immutable functions are easy when dealing with strings and numbers, a little trickier when dealing with arrays, but  much harder when dealing with objects. Using a utility like [Zeron's](https://www.npmjs.com/package/zeron) `iu` (immutable update) function makes dealing with objects (and whole state a breaze).
 
 ## So why can't we build our whole application as stateless?
 
-In a whole application approach, an application cannot be a pure stateless function. As soon as a program has multiple **closures**, (for example - event listeners waiting for user input), an application-wide-stateless program fails. It fails due to the way that closures *capture* state at the time that the closure is activated. Closures take a snapshot the point of activation, and so if state updates outside of the closure - it has no concept of this.
+Pure functions, including the `increment` function above are stateless. They don't hold any state.
+
+In a whole application approach, an application cannot be a pure stateless function. As soon as a program has multiple **closures** (for example - event listeners waiting for user input), an application-wide-stateless program fails. It fails due to the way that closures *capture* state at the time that the closure is activated. Closures take a snapshot at the point of activation, so the closure has no idea of whether or not state has changed outside of its immediate scope.
 
 At a minimum, a whole application approach must have at least one implementation of state.
 
 ## So why not store state in many places?
 
-A developer should have the ability to see how state holistically changes from one iteration to the next. Not all previous states need to be kept, and in production you may only keep the current state in memory, but when in development, the developer should be able to change a setting to trace state changes over time. Having state stored in many places makes this difficult to achieve. For more on this topic - read [this article](https://github.com/attack-monkey/zeron/wiki/Article:-Immutable-State-Stores).
+A developer should have the ability to see how state holistically changes from one iteration to the next. Not all previous states need to be kept, and in production you may only keep the current state in memory, but when in development, the developer should be able to trace state changes over time. Having state stored in many places makes this difficult to achieve. For more on this topic - read [this article](https://github.com/attack-monkey/zeron/wiki/Article:-Immutable-State-Stores).
 
 ## One Store
 
@@ -141,21 +146,23 @@ function eventEmitter() {
 Reusable functions over classes
 -------------------------------
 
-Since functional programming keeps state and function separate, there are very few times when classes (or constructor functions, factories, etc.) are needed. Classes are great for creating instances of objects that share methods with other object of the same class. When functions and state are separate though, objects no longer have methods - they are just data.
+Since functional programming keeps state and function separate, there are very few times when classes (or constructor functions, factories, etc.) are needed. Classes are great for creating instances of objects that share methods with other objects of the same class. When functions and state are separate though, objects no longer have methods - they are just data.
 
-While classes may not be as highly prized, reusability still is. Functions are made reusable by being able to perform the same operation on an input, regardless of what the input is (providing that it is at least of compatible type).
+While classes may not be as highly prized in functional programming, reusability still is. If obeying the separate state from function rule, it is easy to make functions reusable.
 
 For example, our very first increment function doesn't care what number it gets, it simply returns a new number 1 larger than the number passed in.
 
 ### When to use classes, constructor functions, and factories...
 
-So just to clear things up classes, constructor functions, and factories all produce new instances of objects, and while have some differences, can be generally grouped together.
+So just to clear things up classes, constructor functions, and factories all produce new instances of objects, and while have some differences, can be generally grouped together. From here on they will be referred to as factories.
 
-Since state is separate to function, they're not going to get used all the time - however they are still important. For example, our event emitter above is a factory function. It produces event emitters. So as soon as some sort of state (even meta-state) is stored with function, then a class, constructor, factory should be used - so it can be reused to create instances of that thing.
+Since state is separate to function, factories are not going to get used all the time - however they are still important. For example, our event emitter above is a factory function. It produces event emitter instances with properties and methods.
 
 ### Singletons
 
-Singletons are essentially a factory that only ever returns a single instance of an object. They're very important in an application because they can be referenced throughout an application - with the knowledge that what's being updated / retrieved is only within the scope of one object.
+Singletons are essentially factories that only returns a single object instance. Each time the singleton is called, the **same** object is returned.
+
+They're very important as they let the same object be imported anywhere in the application.
 
 ```javascript
 
@@ -205,6 +212,7 @@ Impure functions are not bad. They have to exist. If nothing else, to produce si
 
 In these situations though, it's important to have a strategy for testing that they are doing what they are meant to be doing - in a predictable, repeatable way. 
 
+TODO: Explain further
 
 
 Looping vs Recursion
@@ -258,3 +266,10 @@ function program(state) {
 
 ```
 
+Observables and memory leaks
+----------------------------
+
+TODO: Write me
+
+Semantic file names
+-------------------
