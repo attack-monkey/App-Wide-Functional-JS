@@ -4,6 +4,21 @@ An application wide approach to functional / reactive programming in an es6+ / n
 
 awf.js provides a set of principles, reasons, and patterns that meet functional programming at the edge - to provide a way to build modern javascript applications.
 
+Example stack
+-------------
+
+`
+frontend
+
+zeron {
+  component-api - for components / views
+  state/store-api - for managing state in one place
+  router-api - for managing url routing
+}
+rxjs - for event driven reactive programming
+ramda - for low level functional programming 
+`
+
 Principles
 ----------
 
