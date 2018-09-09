@@ -7,7 +7,8 @@ awf.js provides a set of principles, reasons, and patterns that meet functional 
 Example stack
 -------------
 
-`
+```
+
 frontend
 
 zeron {
@@ -17,7 +18,8 @@ zeron {
 }
 rxjs - for event driven reactive programming
 ramda - for low level functional programming 
-`
+
+```
 
 Principles
 ----------
