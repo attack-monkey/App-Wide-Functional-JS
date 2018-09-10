@@ -11,13 +11,13 @@ Example stack
 
 frontend
 
-zeron {
+- zeron {
   component-api - for components / views
   state/store-api - for managing state in one place
   router-api - for managing url routing
 }
-rxjs - for event driven reactive programming
-ramda - for low level functional programming 
+- rxjs - for event driven reactive programming
+- ramda - for low level functional programming 
 
 ```
 
@@ -87,9 +87,12 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 Writing immutable functions are easy when dealing with strings and numbers, a little trickier when dealing with arrays, but  much harder when dealing with objects. Using a utility like [Zeron's](https://www.npmjs.com/package/zeron) `iu` (immutable update) function makes dealing with objects (and whole state a breaze).
 
-## So why can't we build our whole application as stateless?
+## Stateful vs Stateless
 
 Pure functions, including the `increment` function above are stateless. They don't hold any state.
+It stands to reason that if we were to apply an application-wide functional approach, that it too would be sttaeless - but in short in can't be, and in fact there are advantages to holding some state.
+
+### So why can't we build our whole application as stateless?
 
 In a whole application approach, an application cannot be a pure stateless function. As soon as a program has multiple **closures** (for example - event listeners waiting for user input), an application-wide-stateless program fails. It fails due to the way that closures *capture* state at the time that the closure is activated. Closures take a snapshot at the point of activation, so the closure has no idea of whether or not state has changed outside of its immediate scope.
 
@@ -128,7 +131,7 @@ It might also be beneficial to get part of the currentState, perform operations 
 - It's also fine to dynamically build a static file at the start of application run time. So long as the application then treats the result as static.
 
 ### Meta-state
-Finally, it's ok to have meta-state within a closure, or object. Meta state can for example be a map of callbacks, used in a subscription.
+Finally, it's ok to have meta-state within a closure, or object. Meta state can for example be a map of callbacks, used in a subscription, and in the following example an id counter as well. Note that real state isn't actually stored in the object.
 
 ```javascript
 
@@ -140,22 +143,25 @@ Finally, it's ok to have meta-state within a closure, or object. Meta state can 
  */
 
 function eventEmitter() {
-  let functionMap = {};
-  let id = 0;
-  return {
-    subscribe: (func) => {
-      functionMap[counter] = func;
-      id = id + 1;
-      return id;
+  const proto = {
+    subscribe: function (func) {
+      this.functionMap[this.id] = func;
+      this.id = this.id + 1;
+      return this.id;
     },
-    unsubscribe: (id) => {
-      delete functionMap(id);
-      return id;
+    unsubscribe: function (inputId) {
+      delete this.functionMap(inputId);
+      return inputId;
     },
-    emit: (value) => {
-    	Object.keys(functionMap).forEach(key => functionMap[key](value));
+    emit: function (value) {
+    	Object.keys(this.functionMap).forEach(key => this.functionMap[key](value));
     }
-  }
+  };
+   
+  const instance = Object.create(proto);
+  instance.id = 0;
+  instance.functionMap = {};
+  return instance;
 }
 
 ```
@@ -183,8 +189,10 @@ They're very important as they let the same object be imported anywhere in the a
 
 ```javascript
 
+const protoObject = {thing: 'new object'}
+
 function myFactory() {
-  return {thing: 'new object'};
+  return Object.create(protoObject);
 }
 
 const singletonObject = {
