@@ -98,7 +98,7 @@ In a whole application approach, an application cannot be a pure stateless funct
 
 At a minimum, a whole application approach must have at least one implementation of state.
 
-## So why not store state in many places?
+### So why not store state in many places?
 
 A developer should have the ability to see how state holistically changes from one iteration to the next. Not all previous states need to be kept, and in production you may only keep the current state in memory, but when in development, the developer should be able to trace state changes over time. Having state stored in many places makes this difficult to achieve. For more on this topic - read [this article](https://github.com/attack-monkey/zeron/wiki/Article:-Immutable-State-Stores).
 
@@ -108,7 +108,9 @@ A developer should have the ability to see how state holistically changes from o
 
 To store current state and previous states in one variable, an Immutable State Store can be used. It's a fancy way of saying *An array of states* where `stateStore[0]` is current state, `stateStore[1]` is previous state and so on.
 
-### Working State
+### Managing state
+
+#### Working State
 When changing states it may be beneficial to perform several operations on the current state, before actually saving it as the new current state. This is known as *working state*.
 
 Eg.
@@ -123,14 +125,14 @@ saveNewCurrentState(workingState2);
 
 This is totally acceptable :smile:
 
-### Partial State
+#### Partial State
 It might also be beneficial to get part of the currentState, perform operations on that smaller **partial state** and then immutably merge it back into a new current state. Again totally acceptable :smile:
 
-### Static and Psuedo-static files
+#### Static and Psuedo-static files
 - It's also fine to have static config files for an application.
 - It's also fine to dynamically build a static file at the start of application run time. So long as the application then treats the result as static.
 
-### Meta-state
+#### Meta-state
 Finally, it's ok to have meta-state within a closure, or object. Meta state can for example be a map of callbacks, used in a subscription, and in the following example an id counter as well. Note that real state isn't actually stored in the object.
 
 ```javascript
