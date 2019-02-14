@@ -1,8 +1,8 @@
 # App-Wide-Functional-js
 
-An application wide approach to functional / reactive programming in an es6+ / node landscape
+An application wide approach to functional programming in an es6+ / node landscape
 
-awf.js provides a set of principles, reasons, and patterns that meet Functional Programming at the edge - to provide a way to build modern javascript applications.
+AWF.js provides a set of principles, reasons, and patterns that make functional programming in js simple.
 
 ```
 
@@ -17,6 +17,8 @@ Principles
 1. Use recursion over looping, and ensure that memory leaks are minimised.
 1. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
 1. Use semantic file names to indicate the type of module eg. `home.function.ts` or the shorter `home.fn.ts`.
+
+```
 
 ## Functional vs Object Oriented
 
@@ -58,14 +60,14 @@ In the above, the class creates a **stateful** object. It stores state.
 State is represented by pure data-objects (no methods).
 This reduces the need for classes, since objects don't have methods and don't require extending.
 Less classes and extensions means less complexity.
-There is much less of a need for one object to reference another, meaning less errors, and easier tracking of changes to state.
+There is much less of a need for objects to reference other objects, meaning less errors, and easier tracking of changes to state.
 State changes are immutable ... `e.g. newState = myFunction(state)`, again meaning less errors.
 
 ## The Functional Frontend
 
 The Functional Frontend separates State from Function.
 
-The function in this case is that which generates the **view** in entirity - let's call it the `viewEngine`.
+The function in this case is that which generates the **view** in entirity - let's call it `mainComponent`.
 
 This could be expressed with something like...
 
@@ -73,33 +75,34 @@ This could be expressed with something like...
 
 const state = { ... };
 
-const view = viewEngine(state);
+const view = mainComponent(state);
 
 display(view);
 
 ```
 
-The `viewEngine` takes in `state` and produces the `view`, which is then displayed.
-
-The `viewEngine` calls a component function, passing in `state`, and that component in turn calls the next and so on. 
+The `mainComponent` calls child component functions, passing in `state`. Those components in turn calls the next and so on. 
 Each component returns a view, which finally returns the whole view.
 
-Of course our application is not static, and events need to trigger changes in state, which need to trigger a change in view.
+Of course our application is not static. Events trigger changes in state, which in turn trigger a change in view.
 
-Functions that alter state (or produce other side-effects) are generally known as `actions`. 
+Functions that alter state (or produce other side-effects) are generally known as **actions**. 
 
-Our application could now be expressed in the following way...
+Our application can now be expressed in the following way...
 
 ```
 
 const initialState = { ... };
 
-const view = app(viewEngine(initialState, actions));
+app(initialState, mainComponent, actions);
 
 ```
 
-In the above, `app` is responsible for displaying the view, and also re-rendering the view each time the state changes.  
-Note that an `initialState` is passed into `app` which then manages the state-injection process from there on.
+or even `app({ ... }, mainComponent, actions);`
+
+There is no `displayView`. Instead `app` runs the `displayView` from within. `app` also manages the functions used to generate the new state. Whenever the state is updated, `app` reruns the `displayView` passing in the new state.
+
+In the above, `app` is responsible for rendering the components into the view, and also re-rendering the view each time the state changes. Note that `initialState` is passed into `app`, and then `app` immutably manages the state-injection process from there on.
 
 ### Example Frontend Frameworks
 
@@ -109,9 +112,11 @@ React comes with both Functional Components (they don't store state)
 and  
 Class Components (which do store state)
 
-When React is combined with something like Hyperwrap, it can be used in a completely functional way.
+When React is combined with something like React-Fn (Coming soon), it can be used in a completely functional way.
 
-Hyperapp is an example of a Functional Framework - built functional from the ground up.
+https://github.com/jorgebucaran/hyperapp is another example of a Functional Framework - built functional from the ground up.
+
+https://maquettejs.org/ is another.
 
 ## The Functional Backend
 
@@ -134,50 +139,14 @@ const myNumberV3 = increment(myNumberV2); // 2
 
 > In the above we can see how myNumberV**x** changes over time and if we wanted to, we could print all of the iterations out in a console.log for comparison. This is the benefit of immutability.
 
-Writing immutable functions are easy when dealing with strings and numbers, a little trickier when dealing with arrays, but  much harder when dealing with objects.
+Writing immutable functions is easy when dealing with strings and numbers, a little trickier when dealing with arrays, but  much harder when dealing with objects.
 
 Using [https://github.com/attack-monkey/immutable-update](Immutable Update (AKA iu) ) or [https://github.com/attack-monkey/iu-ts](Immutable Update for Typecript (iu-ts)) simplifies the immutable updating of objects greatly.
 
-## Stateful vs Stateless
+## State in one place
 
-Pure functions are stateless. They don't hold any state.
-It stands to reason that if we were to apply an application-wide functional approach, that it too would be stateless - but in short in can't be, and in fact there are advantages to holding *some* state.
-
-### So why can't we build our whole application as stateless? tldr;
-
-In a whole application approach, an application cannot just be a pure stateless function. As soon as a program has multiple **closures** (for example - event listeners waiting for user input), an application-wide-stateless program fails. It fails due to the way that closures *capture* state at the time that the closure is activated. Closures take a snapshot at the point of activation, so the closure has no idea of whether or not state has changed outside of its immediate scope. EventListeners are basically closures. So if an eventListener is triggered, which recalls the function with an updated state - there are still closures in existence holding the old state.
-
-At a minimum, a whole application approach must have at least one implementation of state.
-
-Hence if we look at our generic functional app...
-
-```
-
-const initialState = { ... };
-
-const view = app(viewEngine(initialState, actions));
-
-```
-
-you will notice that the app takes in an `initialState`, but from then on, it manages state.
-
-`viewEngine` however is a stateless function.
-
-It produces the view along with event listeners connected to actions.
-
-When an `action` updates `state`, `app` injects the new `state` into `viewEngine`. The whole view is rerendered with the new state including any event listeners.
-
-### So why not store state in many places?
-
-A developer should have the ability to see how state holistically changes from one iteration to the next. The developer should be able to trace state changes over time. Having state stored in many places makes this difficult to achieve. For more on this topic - read [this article](https://github.com/attack-monkey/zeron/wiki/Article:-Immutable-State-Stores).
-
-## One Store
-
-### Immutable State Store vs Single State Store
-
-To store current state and previous states in one variable, an Immutable State Store can be used. It's a fancy way of saying *An array of states* where `stateStore[0]` is always the current state, `stateStore[1]` is previous state and so on. Immutable State Stores can allow the whole state to undo (if necessary). 
-
-A Single State Store by comparison - just keeps the current State. This approach uses less memory and while is less flexible, is still able to log state at each change if required.
+An initial state should be created, representing the entire application state.
+From there on, only actions should modify state.
 
 #### Working State
 When changing states it may be beneficial to perform several operations on the current state, before actually saving it as the new current state. This is known as *working state*.
@@ -204,8 +173,7 @@ Since functional programming keeps state and function separate, there are very f
 
 While classes may not be as highly prized in functional programming, reusability still is. If obeying the separate state from function rule, it is easy to make functions reusable.
 
-For example, our very first increment function, it doesn't care what number it gets, it simply returns a new number 1 larger than the number passed in. This type of function can be reused throughout the entire app.
-
+For example, in our very first increment function, it doesn't care what number it gets, it simply returns a new number 1 larger than the number passed in. This type of function can be reused throughout the entire app.
 
 Pure functions
 --------------
@@ -220,14 +188,7 @@ In a functional program, a pure function exhibits the following characteristics.
 
 Functions **where possible should be pure** - however their are times when they simply can't be.
 
-Functions that are predictable, testable, and isolated
-------------------------------------------------------
-
-Impure functions are not bad. They have to exist. If nothing else, to produce side-effects like displaying an on-screen view, sending an email, calling an api, etc.
-
-In these situations though, it's important to have a strategy for testing that they are doing what they are meant to be doing - in a predictable, repeatable way. 
-
-TODO: Explain further
+Actions for example 
 
 
 Looping vs Recursion
