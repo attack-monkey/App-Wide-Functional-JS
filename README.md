@@ -4,7 +4,6 @@ An application wide approach to functional programming in an es6+ / node landsca
 
 AWF.js provides a set of principles, reasons, and patterns that make functional programming in js simple.
 
-```
 
 Principles
 ----------
@@ -18,7 +17,6 @@ Principles
 1. When using Observables and other *function-storing-patterns* ensure that memory leaks are minimised.
 1. Use semantic file names to indicate the type of module eg. `home.function.ts` or the shorter `home.fn.ts`.
 
-```
 
 ## Functional vs Object Oriented
 
